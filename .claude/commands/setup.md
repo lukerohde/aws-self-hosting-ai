@@ -164,21 +164,24 @@ To create a Pulumi Cloud account and access token:
 
 1. Go to https://app.pulumi.com/signup
 2. Sign up (GitHub login is easiest)
-3. Your org name = your username (e.g. "will" if you signed up as "will")
-   Note: you can use your domain name as org name if you like — but they're independent.
-4. After signup: click your avatar → Access Tokens → Create token
-5. Name: "blog-deploy" → Create → Copy the token
+3. Click your avatar (top right) → Personal access tokens → Create token
+4. Name: "blog-deploy" → Create → Copy the token
+5. Your Pulumi org name is your account name — find it at:
+   avatar → Account settings → Account name
+   (e.g. if it shows "lukerohde", that's your org)
 ```
 
-Ask for the token and org name. Write to `.env`:
+Ask them to add the token to `.env` themselves (don't paste it in the chat):
 ```
-PULUMI_ACCESS_TOKEN=<their token>
+PULUMI_ACCESS_TOKEN=your-token-here
 ```
 
-Verify:
+Then read their org name from the output of:
 ```bash
 docker compose run --rm pulumi-ingress pulumi whoami
 ```
+
+The `whoami` output is their org name — store it as PULUMI_ORG. No need to ask.
 
 ---
 
@@ -249,20 +252,17 @@ Already known from Step 2 — confirm it. Store as GITHUB_OWNER.
 "What do you want to call your blog repo on GitHub? (default: my-blog)"
 This will be `github.com/<username>/<repo-name>`. Store as REPO_NAME.
 
-**d) Pulumi org**
-Already known from Step 4. Store as PULUMI_ORG.
-
-**e) AWS region**
+**d) AWS region**
 "Which AWS region? (default: us-east-1)"
 - us-east-1 (N. Virginia) — cheapest, good global performance
 - eu-west-1 (Ireland) — best for European audiences  
 - ap-southeast-2 (Sydney) — best for Australian audiences
 Store as AWS_REGION.
 
-**f) Blog author name**
+**e) Blog author name**
 "Your name, as it will appear on the blog?" Store as AUTHOR_NAME.
 
-**g) Bucket prefix**
+**f) Bucket prefix**
 Set automatically as a slugified version of their GitHub username, e.g. `will-` for user `will`.
 This scopes all S3 buckets to avoid naming conflicts. Store as BUCKET_PREFIX.
 
