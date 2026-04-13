@@ -48,7 +48,7 @@ docker info > /dev/null 2>&1 && echo "✅ Docker" || echo "❌ Docker not runnin
 gh --version 2>/dev/null && echo "✅ gh CLI" || echo "❌ gh CLI not found"
 
 # AWS CLI (runs in Docker — always available)
-docker compose run --rm awscli aws --version 2>/dev/null && echo "✅ AWS CLI (Docker)" || echo "❌ AWS CLI (Docker) — is Docker running?"
+docker compose run --rm awscli --version 2>&1 | grep -q "aws-cli" && echo "✅ AWS CLI (Docker)" || echo "❌ AWS CLI (Docker) — is Docker running?"
 ```
 
 **If Docker is not running:** Stop. Ask the user to start Docker Desktop and try again.
@@ -106,7 +106,7 @@ with admin-level permissions. After setup, CI uses OIDC — no keys needed.
 
 Check if credentials exist:
 ```bash
-docker compose run --rm awscli aws sts get-caller-identity 2>/dev/null
+docker compose run --rm -e AWS_DEFAULT_REGION=us-east-1 awscli sts get-caller-identity 2>/dev/null
 ```
 
 **If credentials work:** Great. Note the account ID for them.
@@ -136,7 +136,7 @@ EOF
 
 Verify:
 ```bash
-docker compose run --rm awscli aws sts get-caller-identity
+docker compose run --rm -e AWS_DEFAULT_REGION=us-east-1 awscli sts get-caller-identity
 ```
 
 Show them their account ID. Explain: "This is the AWS account your blog will live in."
@@ -194,14 +194,14 @@ Ask: "Got a name in mind? I can check if it's available and buy it for you right
 
 If they give a name, check availability:
 ```bash
-docker compose run --rm awscli aws route53domains check-domain-availability \
+docker compose run --rm awscli route53domains check-domain-availability \
   --domain-name <their-domain> --region us-east-1
 ```
 
 If `AVAILABLE`:
   - Get the price:
     ```bash
-    docker compose run --rm awscli aws route53domains list-prices \
+    docker compose run --rm awscli route53domains list-prices \
       --tld <tld> --region us-east-1 --query 'Prices[0].RegistrationPrice'
     ```
   - Show them: "✅ <domain> is available — $X/year. Want me to register it?"
@@ -212,7 +212,7 @@ If `AVAILABLE`:
     - Street address, city, state/province, postal code, country code (e.g. AU, US, GB)
   - Register it:
     ```bash
-    docker compose run --rm awscli aws route53domains register-domain \
+    docker compose run --rm awscli route53domains register-domain \
       --domain-name <domain> \
       --duration-in-years 1 \
       --auto-renew \
