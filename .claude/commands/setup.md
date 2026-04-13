@@ -44,8 +44,8 @@ Run these checks and report clearly what's missing:
 # Docker
 docker info > /dev/null 2>&1 && echo "✅ Docker" || echo "❌ Docker not running"
 
-# gh CLI — try host first, then check if Docker can be used as fallback
-gh --version 2>/dev/null && echo "✅ gh CLI" || echo "⚠️  gh CLI not found"
+# gh CLI — required for repo creation and secret management
+gh --version 2>/dev/null && echo "✅ gh CLI" || echo "❌ gh CLI not found"
 
 # AWS CLI (runs in Docker — always available)
 docker compose run --rm awscli aws --version 2>/dev/null && echo "✅ AWS CLI (Docker)" || echo "❌ AWS CLI (Docker) — is Docker running?"
@@ -54,13 +54,27 @@ docker compose run --rm awscli aws --version 2>/dev/null && echo "✅ AWS CLI (D
 **If Docker is not running:** Stop. Ask the user to start Docker Desktop and try again.
 
 **If gh CLI is missing:**
-- Check if they want to install it: `brew install gh` (Mac) or https://cli.github.com
-- If they can't install it, explain: "You can use the `gh` Docker service instead.
-  All `make gh` commands will work identically. Some interactive flows (like `gh auth login`)
-  work better with the host CLI, so installing it is recommended."
-- Offer to try `make gh ARGS='--version'` to confirm the Docker fallback works.
-  
-Continue once Docker is confirmed running.
+`gh` is required — it creates the GitHub repo and sets CI secrets. Offer to install it:
+
+```bash
+# macOS
+brew install gh
+
+# Linux
+(type -p wget >/dev/null || (sudo apt update && sudo apt-get install wget -y)) \
+  && sudo mkdir -p -m 755 /etc/apt/keyrings \
+  && out=$(mktemp) && wget -nv -O$out https://cli.github.com/packages/githubcli-archive-keyring.gpg \
+  && cat $out | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null \
+  && sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg \
+  && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+  && sudo apt update && sudo apt install gh -y
+```
+
+Or direct them to https://cli.github.com for Windows or other platforms.
+
+After installation, verify: `gh --version`
+
+Continue once both Docker and gh are confirmed.
 
 ---
 

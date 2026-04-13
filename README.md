@@ -114,10 +114,14 @@ The only secret stored in GitHub is `PULUMI_ACCESS_TOKEN` (for Pulumi Cloud stat
 |------|---------|
 | Docker Desktop | https://www.docker.com/products/docker-desktop |
 | Claude Code | https://claude.ai/download |
+| GitHub CLI (`gh`) | `brew install gh` or https://cli.github.com |
 | GitHub account | https://github.com |
 | AWS account | https://aws.amazon.com/free |
 | Pulumi Cloud account | https://app.pulumi.com/signup (free) |
 | A domain name | Claude can buy one for you — see below |
+
+`gh` is required — it creates your GitHub repo, sets CI secrets, and handles auth. If it's
+not installed when you run `/setup`, Claude will offer to install it via Homebrew.
 
 ### Getting a domain
 
