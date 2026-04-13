@@ -172,11 +172,56 @@ Ask these questions. Explain each one:
 **a) Domain name**
 "What domain will your blog live at? (e.g. will.dev, myname.com)"
 
-If they don't have a domain yet, suggest:
-- **Namecheap** (https://namecheap.com) — cheap, good UX, easy NS management. ~$10-15/yr for .com
-- **AWS Route53** (https://console.aws.amazon.com/route53/) — most integrated with this setup,
-  API-first, ~$12/yr for .com + $0.50/month hosted zone. Slightly more expensive but seamless.
-- Note: avoid Squarespace/GoDaddy — they make NS delegation harder
+If they say they don't have a domain yet, or aren't sure:
+
+**Offer to find and buy one via AWS Route53 — the most seamless option since you're already here.**
+
+Ask: "Got a name in mind? I can check if it's available and buy it for you right now using your AWS credentials."
+
+If they give a name, check availability:
+```bash
+docker compose run --rm awscli aws route53domains check-domain-availability \
+  --domain-name <their-domain> --region us-east-1
+```
+
+If `AVAILABLE`:
+  - Get the price:
+    ```bash
+    docker compose run --rm awscli aws route53domains list-prices \
+      --tld <tld> --region us-east-1 --query 'Prices[0].RegistrationPrice'
+    ```
+  - Show them: "✅ <domain> is available — $X/year. Want me to register it?"
+  - If yes, collect the required contact details (Route53 needs these for WHOIS):
+    - First name, last name
+    - Email address
+    - Phone number (format: +1.2025551234)
+    - Street address, city, state/province, postal code, country code (e.g. AU, US, GB)
+  - Register it:
+    ```bash
+    docker compose run --rm awscli aws route53domains register-domain \
+      --domain-name <domain> \
+      --duration-in-years 1 \
+      --auto-renew \
+      --admin-contact 'FirstName=<>,LastName=<>,ContactType=PERSON,OrganizationName="",AddressLine1=<>,City=<>,State=<>,CountryCode=<>,ZipCode=<>,PhoneNumber=<>,Email=<>' \
+      --registrant-contact 'FirstName=<>,LastName=<>,ContactType=PERSON,OrganizationName="",AddressLine1=<>,City=<>,State=<>,CountryCode=<>,ZipCode=<>,PhoneNumber=<>,Email=<>' \
+      --tech-contact 'FirstName=<>,LastName=<>,ContactType=PERSON,OrganizationName="",AddressLine1=<>,City=<>,State=<>,CountryCode=<>,ZipCode=<>,PhoneNumber=<>,Email=<>' \
+      --privacy-protect-admin-contact \
+      --privacy-protect-registrant-contact \
+      --privacy-protect-tech-contact \
+      --region us-east-1
+    ```
+    Note: `--privacy-protect-*` flags are strongly recommended — they hide your contact details from public WHOIS lookups.
+  - Registration takes a few minutes. AWS will send a confirmation email.
+  - **Skip the nameserver delegation step later** — AWS automatically creates a Route53 hosted zone and sets NS records when you buy a domain through Route53. Just confirm the zone exists after purchase.
+
+If `UNAVAILABLE`:
+  - Suggest variations: try different TLDs (.dev, .io, .net), hyphenated versions, or slightly different names
+  - Let them pick and check again
+
+If they already have a domain at another registrar:
+  - That's fine — they'll delegate NS records to Route53 in Step 8 (5-minute manual step)
+  - If they're at GoDaddy or Squarespace, warn that NS changes can be buried in their UI
+  - Namecheap and most others are straightforward
 
 After they choose/confirm, store as DOMAIN.
 
@@ -291,7 +336,16 @@ Copy the 4 nameserver values (they look like `ns-123.awsdns-45.com`).
 
 ## Step 8 — Delegate nameservers at your registrar
 
-**This is the manual step.** The user must:
+**If you bought the domain via Route53 in Step 5:** AWS automatically wires up the hosted zone
+and nameservers. Skip the manual delegation — just verify the zone exists:
+```bash
+make infra-ingress-outputs
+```
+If `zone_id` appears in the output, you're done. Continue to Step 9.
+
+---
+
+**If you're using a domain from another registrar:** This is the one manual step. The user must:
 
 1. Log into their domain registrar (Namecheap, Route53, etc.)
 2. Find the DNS / Nameserver settings for their domain

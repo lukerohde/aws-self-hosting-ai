@@ -32,16 +32,14 @@ AWS credentials → Pulumi Cloud → domain → deploy infra → live blog.
 | Pulumi Cloud account | https://app.pulumi.com/signup |
 | A domain name | Namecheap or AWS Route53 (see below) |
 
-### Choosing a domain registrar
+### Getting a domain
 
-**Namecheap** — simple, cheap (~$10-15/yr for .com), good NS management UI.
-https://namecheap.com
+Claude can check availability and **buy a domain for you via AWS Route53** during `/setup` —
+just say "I don't have one yet" and give it a name to check. Route53 purchases automatically
+wire up DNS, skipping the manual nameserver delegation step.
 
-**AWS Route53** — most integrated with this setup since you're already on AWS.
-~$12/yr for .com + $0.50/month hosted zone. API-first, seamless DNS delegation.
-https://console.aws.amazon.com/route53/
-
-Either works. You'll point your domain's nameservers at AWS Route53 during setup.
+If you already have a domain elsewhere (Namecheap, GoDaddy, etc.) that's fine too —
+you'll point its nameservers at Route53 during setup (~5 min).
 
 ## After setup
 
