@@ -6,6 +6,16 @@ and build the actual product.
 
 **Arguments:** $ARGUMENTS (optional subdomain name, e.g. `/new-site myapp`)
 
+## Secret safety (follow throughout)
+
+- Never run a command that prints a secret value to stdout
+- Never expand a secret into `--body` — use stdin pipes instead
+- Check whether a key is set with `grep -qE '^KEY=.+' .env` — presence only, no value
+- Set GitHub secrets safely: `grep -m1 '^KEY=' .env | cut -d= -f2- | gh secret set KEY`
+- Ask the user to open `.env` in their own editor — never ask them to paste secrets in chat
+
+---
+
 ## How DNS and AWS access work (read before starting)
 
 **DNS:** The new site's own Pulumi stack handles the DNS record. It reads `zone_id`
@@ -473,8 +483,8 @@ git commit -m "Initial <APP_NAME> scaffold"
 
 gh repo create <GITHUB_OWNER>/<REPO_NAME> --public --description "<DESCRIPTION>" --source=. --remote=origin
 
-PULUMI_TOKEN=$(grep PULUMI_ACCESS_TOKEN .env | cut -d= -f2)
-gh secret set PULUMI_ACCESS_TOKEN --body "$PULUMI_TOKEN" --repo <GITHUB_OWNER>/<REPO_NAME>
+grep -m1 '^PULUMI_ACCESS_TOKEN=' .env | cut -d= -f2- \
+  | gh secret set PULUMI_ACCESS_TOKEN --repo <GITHUB_OWNER>/<REPO_NAME>
 
 git push -u origin main
 ```
