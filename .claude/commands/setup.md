@@ -119,22 +119,25 @@ To create AWS credentials:
 1. Open https://console.aws.amazon.com/iam/
 2. Go to Users → Create user
 3. Username: blog-admin (or anything you like)
-4. Attach policy: AdministratorAccess
-   (This is your personal blog. Full access is appropriate.)
-5. After creating: Security credentials tab → Create access key
-6. Use case: "Local code" → Next → Create
-7. Download the CSV or copy the Access Key ID and Secret Access Key
+4. Permissions: Attach policies directly → AdministratorAccess
+   (This is your personal blog — full access is appropriate.)
+5. Click Create user, then click the "blog-admin" username to open it
+6. Security credentials tab → Create access key
+7. Use case: "Local code" → Next → Create
+8. Copy both the Access Key ID and Secret Access Key
 ```
 
-Ask for the keys, then write them to `.env`:
+**Don't paste the keys into this chat.** Copy the example file and fill it in yourself:
 ```bash
-cat >> .env << 'EOF'
-AWS_ACCESS_KEY_ID=<their key>
-AWS_SECRET_ACCESS_KEY=<their secret>
-EOF
+cp .env.example .env
+```
+Then open `.env` in your editor and set:
+```
+AWS_ACCESS_KEY_ID=your-key-here
+AWS_SECRET_ACCESS_KEY=your-secret-here
 ```
 
-Verify:
+Once saved, verify:
 ```bash
 docker compose run --rm -e AWS_DEFAULT_REGION=us-east-1 awscli sts get-caller-identity
 ```
