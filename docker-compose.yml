@@ -44,6 +44,7 @@ services:
       AWS_SESSION_TOKEN: ${AWS_SESSION_TOKEN:-}
       PULUMI_ACCESS_TOKEN: ${PULUMI_ACCESS_TOKEN:-}
       PULUMI_STACK: ${PULUMI_STACK:-prod}
+      PULUMI_SKIP_UPDATE_CHECK: "true"
 
   # ── Pulumi — site (make infra-preview / infra-up / infra-destroy) ───────────
   pulumi:
@@ -61,6 +62,7 @@ services:
       AWS_SESSION_TOKEN: ${AWS_SESSION_TOKEN:-}
       PULUMI_ACCESS_TOKEN: ${PULUMI_ACCESS_TOKEN:-}
       PULUMI_STACK: ${PULUMI_STACK:-prod}
+      PULUMI_SKIP_UPDATE_CHECK: "true"
 
   # ── AWS CLI — deploy: s3 sync + CloudFront invalidation (make deploy) ────────
   awscli:

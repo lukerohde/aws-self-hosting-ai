@@ -5,4 +5,4 @@ WORKDIR /infra
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-ENTRYPOINT ["pulumi", "--non-interactive", "--stack", "prod"]
+ENTRYPOINT ["pulumi", "--non-interactive"]
