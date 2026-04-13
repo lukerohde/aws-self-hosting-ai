@@ -1,8 +1,13 @@
-# /new-spa — Create a new SPA at a subdomain
+# /new-spa — Deploy a new app at a subdomain
 
-Scaffold a Hello World SPA at `<subdomain>.<your-domain>`, with its own GitHub repo,
-AWS infrastructure, and CI/CD. It shares the ingress stack (Route53 zone + OIDC + IAM roles)
-already deployed by `/setup`.
+**SPA = Single Page App** — a self-contained web app served as static files (HTML, CSS, JS).
+No server required. Loads in the browser, runs entirely client-side. Great for tools,
+portfolio pieces, side projects, dashboards, or anything you want to put on the web quickly.
+
+This command scaffolds a Hello World SPA at `<subdomain>.<your-domain>`, creates its own
+GitHub repo, wires up CI/CD, sets the `PULUMI_ACCESS_TOKEN` secret, and deploys the AWS
+infrastructure. It shares the ingress stack (Route53 zone + OIDC + IAM roles) already
+deployed by `/setup` — no duplicate DNS zones or IAM setup needed.
 
 **Arguments:** $ARGUMENTS (optional subdomain name, e.g. `/new-spa myapp`)
 
@@ -347,7 +352,7 @@ jobs:
 ## Step 7 — Copy .env from blog repo
 
 ```bash
-cp ../<blog-repo>/.env ../<APP_NAME>/.env
+cp .env ../<APP_NAME>/.env
 ```
 
 The SPA uses the same AWS credentials and PULUMI_ACCESS_TOKEN.
@@ -374,7 +379,6 @@ git add -A
 git commit -m "Initial <APP_NAME> SPA"
 gh repo create <GITHUB_OWNER>/<SPA_REPO> --public --description "<SPA_DESC>" --source=. --remote=origin
 
-# Copy PULUMI_ACCESS_TOKEN from blog repo secrets
 PULUMI_TOKEN=$(grep PULUMI_ACCESS_TOKEN .env | cut -d= -f2)
 gh secret set PULUMI_ACCESS_TOKEN --body "$PULUMI_TOKEN" --repo <GITHUB_OWNER>/<SPA_REPO>
 
