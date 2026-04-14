@@ -185,7 +185,12 @@ pulumi-static-site @ git+https://github.com/lukerohde/pulumi-static-site.git@v0.
 ```
 
 **`../<APP_NAME>/infra/pulumi/Dockerfile`:**
-Copy from `infra/pulumi/Dockerfile` in this repo.
+Copy both files from `infra/pulumi/` in this repo:
+```bash
+cp infra/pulumi/Dockerfile ../<APP_NAME>/infra/pulumi/Dockerfile
+cp infra/pulumi/entrypoint.sh ../<APP_NAME>/infra/pulumi/entrypoint.sh
+```
+The `entrypoint.sh` handles Pulumi login and stack selection — without it `make infra-up` will fail.
 
 ---
 
