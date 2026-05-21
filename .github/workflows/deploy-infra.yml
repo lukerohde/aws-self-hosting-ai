@@ -25,9 +25,9 @@ jobs:
     if: ${{ secrets.PULUMI_ACCESS_TOKEN != '' }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: pulumi/setup-pulumi@v2
+      - uses: pulumi/actions@v7
 
       - name: Get infra role ARN
         id: roles
@@ -39,7 +39,7 @@ jobs:
           echo "AWS_REGION=$(pulumi stack output aws_region -s PULUMI_ORG/GITHUB_OWNER-ingress/prod)" >> $GITHUB_OUTPUT
 
       - name: Configure AWS credentials (OIDC)
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ steps.roles.outputs.INFRA_ROLE_ARN }}
           aws-region: ${{ steps.roles.outputs.AWS_REGION }}
@@ -62,9 +62,9 @@ jobs:
     if: ${{ secrets.PULUMI_ACCESS_TOKEN != '' }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: pulumi/setup-pulumi@v2
+      - uses: pulumi/actions@v7
 
       - name: Get infra role ARN
         id: roles
@@ -76,7 +76,7 @@ jobs:
           echo "AWS_REGION=$(pulumi stack output aws_region -s PULUMI_ORG/GITHUB_OWNER-ingress/prod)" >> $GITHUB_OUTPUT
 
       - name: Configure AWS credentials (OIDC)
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ steps.roles.outputs.INFRA_ROLE_ARN }}
           aws-region: ${{ steps.roles.outputs.AWS_REGION }}
